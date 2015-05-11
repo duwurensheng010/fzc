@@ -1,0 +1,20 @@
+package com.fzc.rhinooffice.config;
+
+import com.lidroid.xutils.util.LogUtils;
+
+import android.app.Application;
+
+public class MyApplication extends Application{
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		init();
+	}
+	
+	private void init(){
+		LogUtils.customTagPrefix = "RhinoOffice"; // 方便调试时过滤 adb logcat 输出
+        LogUtils.allowI = true; //打开LogUtils.i(...) 的 adb log 输出
+	}
+	
+}

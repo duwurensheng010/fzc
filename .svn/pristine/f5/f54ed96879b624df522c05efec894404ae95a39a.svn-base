@@ -1,0 +1,75 @@
+package com.fzc.rhinooffice.activity;
+
+import com.fzc.rhinooffice.R;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+@ContentView(R.layout.activity_login)
+public class LoginActivity extends Activity {
+
+	@ViewInject(R.id.edt_username_input)
+	private EditText edt_username_input;
+
+	@ViewInject(R.id.edt_pwd_input)
+	private EditText edt_pwd_input;
+
+	@ViewInject(R.id.btn_login_now)
+	private Button btn_login_now;
+
+	@ViewInject(R.id.tv_forget_pwd)
+	private TextView tv_forget_pwd;
+
+	@ViewInject(R.id.tv_register_now)
+	private TextView tv_register_now;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		ViewUtils.inject(this);
+		LogUtils.i("LoginActivity begin");
+	}
+
+	@OnClick(R.id.btn_login_now)
+	private void loginNow(View v) {
+		String username = edt_username_input.getText() + "";
+		String pwd = edt_pwd_input.getText() + "";
+		if (username.isEmpty()) {
+			Toast.makeText(this, R.string.username_not_null, Toast.LENGTH_SHORT).show();
+			edt_username_input.findFocus();
+			return;
+		}
+
+		if (pwd.isEmpty()) {
+			Toast.makeText(this, R.string.pwd_not_null, Toast.LENGTH_SHORT).show();
+			edt_pwd_input.findFocus();
+			return;
+		}
+
+		// µÇÂ¼
+	}
+
+	//Íü¼ÇÃÜÂë
+	@OnClick(R.id.tv_forget_pwd)
+	private void forgetPwd(View v) {
+		LogUtils.i("forget password");
+	}
+
+	//Á¢¼´×¢²á
+	@OnClick(R.id.tv_register_now)
+	private void registerNow(View v) {
+		LogUtils.i("register now");
+	}
+
+}

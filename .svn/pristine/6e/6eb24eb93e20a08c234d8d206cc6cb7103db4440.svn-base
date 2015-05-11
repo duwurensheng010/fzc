@@ -1,0 +1,185 @@
+package com.fzc.rhinooffice.activity;
+
+import com.fzc.rhinooffice.R;
+import com.fzc.rhinooffice.fragment.BusinessFragment;
+import com.fzc.rhinooffice.fragment.MallFragment;
+import com.fzc.rhinooffice.fragment.NewsFragment;
+import com.fzc.rhinooffice.fragment.OfficeFragment;
+import com.fzc.rhinooffice.fragment.WorkbenchFragment;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+
+/**
+ * 主界面
+ * @author chao.liu
+ *
+ */
+
+@ContentView(R.layout.activity_home)
+public class HomeActivity extends FragmentActivity implements
+		OnCheckedChangeListener {
+
+	private WorkbenchFragment workbenchFragment;
+
+	private NewsFragment newsFragment;
+
+	private OfficeFragment officeFragment;
+
+	private BusinessFragment businessFragment;
+
+	private MallFragment mallFragment;
+	private FragmentTransaction tran;
+	private FragmentManager fragmentManager;
+
+	@ViewInject(R.id.container)
+	private LinearLayout container;
+
+	@ViewInject(R.id.rg_radioBtns)
+	private RadioGroup rbTables;
+
+	@ViewInject(R.id.rb_workbench)
+	private RadioButton rbWorkbench;
+
+	@ViewInject(R.id.rb_news)
+	private RadioButton rbNews;
+
+	@ViewInject(R.id.rb_office)
+	private RadioButton rbOffice;
+
+	@ViewInject(R.id.rb_business)
+	private RadioButton rbBusiness;
+
+	@ViewInject(R.id.rb_mall)
+	private RadioButton rbMall;
+	
+	private long firstTime = 0;
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		LogUtils.i("HomeActivity begin");
+		ViewUtils.inject(this);
+		fragmentManager = getSupportFragmentManager();
+		// initUI();
+		listener();
+	}
+
+	private void listener() {
+		rbWorkbench.setOnCheckedChangeListener(this);
+		rbNews.setOnCheckedChangeListener(this);
+		rbOffice.setOnCheckedChangeListener(this);
+		rbBusiness.setOnCheckedChangeListener(this);
+		rbMall.setOnCheckedChangeListener(this);
+		rbTables.check(R.id.rb_workbench);
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+		if (isChecked) {
+			tran = fragmentManager.beginTransaction();
+			hideFragments(tran);
+			switch (button.getId()) {
+			case R.id.rb_workbench:
+				if (workbenchFragment == null) {
+					workbenchFragment = new WorkbenchFragment();
+					tran.add(R.id.container, workbenchFragment);
+				} else {
+					tran.show(workbenchFragment);
+				}
+				break;
+
+			case R.id.rb_news:
+				if (newsFragment == null) {
+					newsFragment = new NewsFragment();
+					tran.add(R.id.container, newsFragment);
+				} else {
+					tran.show(newsFragment);
+				}
+				break;
+			case R.id.rb_office:
+				if (officeFragment == null) {
+					officeFragment = new OfficeFragment();
+					tran.add(R.id.container, officeFragment);
+				} else {
+					tran.show(officeFragment);
+				}
+				break;
+			case R.id.rb_business:
+				if (businessFragment == null) {
+					businessFragment = new BusinessFragment();
+					tran.add(R.id.container, businessFragment);
+				} else {
+					tran.show(businessFragment);
+				}
+				break;
+
+			case R.id.rb_mall:
+				if (mallFragment == null) {
+					mallFragment = new MallFragment();
+					tran.add(R.id.container, mallFragment);
+				} else {
+					tran.show(mallFragment);
+				}
+				break;
+			}
+			tran.commit();
+		}
+
+	}
+
+	/**
+	 * 将所有的Fragment都置为隐藏状态。
+	 * 
+	 * @param transaction
+	 *            用于对Fragment执行操作的事务
+	 */
+	private void hideFragments(FragmentTransaction transaction) {
+		if (workbenchFragment != null) {
+			transaction.hide(workbenchFragment);
+		}
+		if (newsFragment != null) {
+			transaction.hide(newsFragment);
+		}
+		if (officeFragment != null) {
+			transaction.hide(officeFragment);
+		}
+		if (businessFragment != null) {
+			transaction.hide(businessFragment);
+		}
+		if (mallFragment != null) {
+			transaction.hide(mallFragment);
+		}
+	}
+
+	// 重写onkeyDown方法，截获back键返回事件 onKeyDown(int keyCoder,KeyEvent event)
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		long secondTime = System.currentTimeMillis();
+		if ((secondTime - firstTime) > 2000) {
+			Toast.makeText(this, R.string.app_exit_tip, Toast.LENGTH_SHORT)
+					.show();
+			firstTime = secondTime;
+		} else {
+			System.exit(0);
+			finish();
+		}
+		return true;
+		//return super.onKeyDown(keyCode, event);
+	}
+
+}

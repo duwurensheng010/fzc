@@ -1,0 +1,320 @@
+package com.fzc.rhinooffice.module;
+
+
+import com.fzc.rhinooffice.R;
+import com.fzc.rhinooffice.common.view.DragLayout;
+import com.fzc.rhinooffice.common.view.MyRelativeLayout;
+import com.fzc.rhinooffice.common.view.DragLayout.DragListener;
+import com.fzc.rhinooffice.module.business.BusinessFragment;
+import com.fzc.rhinooffice.module.mall.MallFragment;
+import com.fzc.rhinooffice.module.news.NewsFragment;
+import com.fzc.rhinooffice.module.office.OfficeFragment;
+import com.fzc.rhinooffice.module.workbench.WorkbenchFragment;
+import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
+import com.lidroid.xutils.view.annotation.ContentView;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
+import com.nineoldandroids.view.ViewHelper;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+
+/**
+ * 主界面
+ * @author chao.liu
+ *
+ */
+
+@ContentView(R.layout.reddotface_view)
+public class HomeActivity extends FragmentActivity implements
+		OnCheckedChangeListener, OnClickListener {
+
+	//侧滑界面
+	@ViewInject(R.id.dl)
+	private DragLayout dl;
+	
+	@ViewInject(R.id.iv_sliding_user_icon)
+	private ImageView iv_sliding_user_icon;
+	
+	@ViewInject(R.id.tv_user_name)
+	private ImageView tv_user_name;
+	
+	@ViewInject(R.id.tv_user_desc)
+	private ImageView tv_user_desc;
+	
+	@ViewInject(R.id.ll_personal_settings)
+	private LinearLayout ll_personal_settings;
+	
+	@ViewInject(R.id.ll_change_pwd)
+	private LinearLayout ll_change_pwd;
+	
+	@ViewInject(R.id.ll_version_update)
+	private LinearLayout ll_version_update;
+	
+	@ViewInject(R.id.ll_operator_information)
+	private LinearLayout ll_operator_information;
+	
+	
+	//主界面
+	private WorkbenchFragment workbenchFragment;
+
+	private NewsFragment newsFragment;
+
+	private OfficeFragment officeFragment;
+
+	private BusinessFragment businessFragment;
+
+	private MallFragment mallFragment;
+	private FragmentTransaction tran;
+	private FragmentManager fragmentManager;
+	
+	
+	@ViewInject(R.id.rl_main_view)
+	private MyRelativeLayout rl_main_view;
+	
+	//@ViewInject(R.id.ll_sliding)
+	private LinearLayout ll_sliding;
+	
+	//@ViewInject(R.id.iv_sliding)
+	private ImageView iv_sliding;
+	
+	//@ViewInject(R.id.iv_user_icon)
+	private ImageView iv_user_icon;
+	
+	//@ViewInject(R.id.iv_registration)
+	private ImageView iv_registration;
+	
+	//@ViewInject(R.id.container)
+	private LinearLayout container;
+
+	//@ViewInject(R.id.rg_radioBtns)
+	private RadioGroup rg_radioBtns;
+
+	//@ViewInject(R.id.rb_workbench)
+	private RadioButton rb_workbench;
+
+	//@ViewInject(R.id.rb_news)
+	private RadioButton rb_news;
+
+	//@ViewInject(R.id.rb_office)
+	private RadioButton rb_office;
+
+	//@ViewInject(R.id.rb_business)
+	private RadioButton rb_business;
+
+	//@ViewInject(R.id.rb_mall)
+	private RadioButton rb_mall;
+	
+	private long firstTime = 0;
+	
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		LogUtils.i("HomeActivity begin");
+		ViewUtils.inject(this);
+		initDragLayout();
+		initHomeView();
+	}
+	
+	private void initDragLayout() {
+		//dl = (DragLayout) findViewById(R.id.dl);
+		dl.setDragListener(new DragListener() {
+			@Override
+			public void onOpen() {
+				//lv.smoothScrollToPosition(new Random().nextInt(30));
+			}
+
+			@Override
+			public void onClose() {
+				shake();
+			}
+
+			@Override
+			public void onDrag(float percent) {
+				ViewHelper.setAlpha(ll_sliding, 1 - percent);
+			}
+		});
+	}
+	
+	private void initHomeView(){
+		fragmentManager = getSupportFragmentManager();
+		ll_sliding = (LinearLayout) rl_main_view.findViewById(R.id.ll_sliding);
+		iv_sliding = (ImageView) rl_main_view.findViewById(R.id.iv_sliding);
+		iv_user_icon = (ImageView) rl_main_view.findViewById(R.id.iv_user_icon);
+		iv_registration = (ImageView) rl_main_view.findViewById(R.id.iv_registration);
+		container = (LinearLayout) rl_main_view.findViewById(R.id.container);
+		rg_radioBtns = (RadioGroup) rl_main_view.findViewById(R.id.rg_radioBtns);
+		rb_workbench = (RadioButton) rl_main_view.findViewById(R.id.rb_workbench);
+		rb_news = (RadioButton) rl_main_view.findViewById(R.id.rb_news);
+		rb_office = (RadioButton) rl_main_view.findViewById(R.id.rb_office);
+		rb_business = (RadioButton) rl_main_view.findViewById(R.id.rb_business);
+		rb_mall = (RadioButton) rl_main_view.findViewById(R.id.rb_mall);
+		listener();
+	}
+	
+	private void listener() {
+		
+		ll_sliding.setOnClickListener(this);
+		iv_registration.setOnClickListener(this);
+		
+		rb_workbench.setOnCheckedChangeListener(this);
+		rb_news.setOnCheckedChangeListener(this);
+		rb_office.setOnCheckedChangeListener(this);
+		rb_business.setOnCheckedChangeListener(this);
+		rb_mall.setOnCheckedChangeListener(this);
+		rg_radioBtns.check(R.id.rb_workbench);
+		
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+		if (isChecked) {
+			tran = fragmentManager.beginTransaction();
+			hideFragments(tran);
+			switch (button.getId()) {
+			case R.id.rb_workbench:
+				if (workbenchFragment == null) {
+					workbenchFragment = new WorkbenchFragment();
+					tran.add(R.id.container, workbenchFragment);
+				} else {
+					tran.show(workbenchFragment);
+				}
+				break;
+
+			case R.id.rb_news:
+				if (newsFragment == null) {
+					newsFragment = new NewsFragment();
+					tran.add(R.id.container, newsFragment);
+				} else {
+					tran.show(newsFragment);
+				}
+				break;
+			case R.id.rb_office:
+				if (officeFragment == null) {
+					officeFragment = new OfficeFragment();
+					tran.add(R.id.container, officeFragment);
+				} else {
+					tran.show(officeFragment);
+				}
+				break;
+			case R.id.rb_business:
+				if (businessFragment == null) {
+					businessFragment = new BusinessFragment();
+					tran.add(R.id.container, businessFragment);
+				} else {
+					tran.show(businessFragment);
+				}
+				break;
+
+			case R.id.rb_mall:
+				if (mallFragment == null) {
+					mallFragment = new MallFragment();
+					tran.add(R.id.container, mallFragment);
+				} else {
+					tran.show(mallFragment);
+				}
+				break;
+			}
+			tran.commit();
+		}
+
+	}
+	
+	
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.ll_sliding:
+			dl.open();
+			break;
+
+		case R.id.iv_registration:
+			//签到
+			break;
+		}
+		
+	}
+	
+	@OnClick({R.id.ll_personal_settings})
+	private void Setting(View v){
+		//设置
+	}
+	
+	@OnClick({R.id.ll_change_pwd})
+	private void changePwd(View v){
+		//修改密码
+	}
+	
+	@OnClick({R.id.ll_version_update})
+	private void versionUpdate(View v){
+		//版本更新
+	}
+	
+	@OnClick({R.id.ll_operator_information})
+	private void checkOperaterInfo(View v){
+		//查看操作人员信息
+	}
+	
+	private void shake() {
+		iv_sliding.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
+	}
+	
+	
+	/**
+	 * 将所有的Fragment都置为隐藏状态。
+	 * 
+	 * @param transaction
+	 *            用于对Fragment执行操作的事务
+	 */
+	private void hideFragments(FragmentTransaction transaction) {
+		if (workbenchFragment != null) {
+			transaction.hide(workbenchFragment);
+		}
+		if (newsFragment != null) {
+			transaction.hide(newsFragment);
+		}
+		if (officeFragment != null) {
+			transaction.hide(officeFragment);
+		}
+		if (businessFragment != null) {
+			transaction.hide(businessFragment);
+		}
+		if (mallFragment != null) {
+			transaction.hide(mallFragment);
+		}
+	}
+
+	// 重写onkeyDown方法，截获back键返回事件 onKeyDown(int keyCoder,KeyEvent event)
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		long secondTime = System.currentTimeMillis();
+		if ((secondTime - firstTime) > 2000) {
+			Toast.makeText(this, R.string.app_exit_tip, Toast.LENGTH_SHORT)
+					.show();
+			firstTime = secondTime;
+		} else {
+			System.exit(0);
+			finish();
+		}
+		return true;
+		//return super.onKeyDown(keyCode, event);
+	}
+
+	
+
+}
